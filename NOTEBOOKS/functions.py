@@ -10,10 +10,8 @@ warnings.filterwarnings("ignore")
 import itertools
 from sklearn import metrics
 
-from statsmodels.formula.api import ols
-
 from sklearn.model_selection import (train_test_split, GridSearchCV,
-                                     cross_val_score)
+                                     RandomizedSearchCV, cross_val_score)
 
 from sklearn.preprocessing import StandardScaler
 import statsmodels.api as sm
@@ -30,6 +28,21 @@ from sklearn.metrics import (classification_report, confusion_matrix,
                              plot_confusion_matrix, precision_score, 
                              accuracy_score, recall_score, f1_score, roc_curve, 
                              auc)
+
+from scipy.special import logit
+
+from functions import *
+
+plt.style.use('seaborn')
+
+import shap
+shap.initjs()
+
+from alibi.explainers import KernelShap
+from scipy.special import logit
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+
 
 
 # Define functions that will be repeatedly used 
@@ -215,6 +228,21 @@ def qqplot(model, title):
     plt.title(title)
     plt.show();
     
+def evaluate(model, X_test, y_test):
+    predictions = model.predict(X_test)
+    errors = abs(predictions - y_test)
+    mape = 100 * np.mean(errors / y_test)
+    accuracy = 100 - mape
+    print('Model Performance')
+    print('Average Error: {:0.4f} degrees.'.format(np.mean(errors)))
+    print('Accuracy = {:0.2f}%.'.format(accuracy))
+    
+    return accuracy
  
+def plot_shap(model, X_train):
+    explainer = shap.Explainer(model, X_train)
+    shap_values = explainer(X_train)
+    
+    shap.plots.beeswarm(shap_values)
 
-
+    shap.plots.bar(shap_values)
