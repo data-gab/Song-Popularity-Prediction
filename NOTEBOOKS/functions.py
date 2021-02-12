@@ -56,7 +56,7 @@ def model_performance(model, X_train, X_test, y_train, y_test, pred):
     print("\n")
     print("----------------------------------------------------------")
     
-def plot_feature_importances(model, X_train):
+def plot_feature_importances(model, X_train, X):
     ''' This function will plot the feature importances of the model '''
     
     # Create barplot of feature importances
