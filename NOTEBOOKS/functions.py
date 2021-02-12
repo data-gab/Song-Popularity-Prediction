@@ -10,6 +10,8 @@ warnings.filterwarnings("ignore")
 import itertools
 from sklearn import metrics
 
+from statsmodels.formula.api import ols
+
 from sklearn.model_selection import (train_test_split, GridSearchCV,
                                      cross_val_score)
 
@@ -151,3 +153,68 @@ def roc_auc(model, X_train, X_test, y_train, y_test):
     
     print('Train AUC: {}'.format(auc(train_fpr, train_tpr)))
     print('Test AUC: {}'.format(auc(test_fpr, test_tpr)))
+    
+    
+    
+    
+    sns.set_style('darkgrid', {'axes.facecolor': '0.9'})
+
+    
+def roc_dt_rf(y_test, pred, label):    
+    fpr, tpr, thresholds = roc_curve(y_test, pred)
+    roc_auc = auc(fpr, tpr)
+
+    # ROC curve for training set
+    plt.figure(figsize=(10, 8))
+    lw = 2
+    plt.plot(fpr, tpr, label=label,
+              color='darkorange', lw=lw)
+    plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.yticks([i/20.0 for i in range(21)])
+    plt.xticks([i/20.0 for i in range(21)])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver operating characteristic (ROC) Curve')
+    plt.legend(loc="lower right")
+    plt.show();
+    
+    print('AUC: {}'.format(auc(fpr, tpr)))
+    
+def build_sm_ols(df, features, target, add_constant=False):
+    ''' This function builds OLS model and prints out summary '''
+    X = pd.DataFrame(df[features])
+    if add_constant:
+        X = sm.add_constant(X)
+    y =  df[target]
+    ols = sm.OLS(y, X).fit()
+    return ols
+
+def plot_residuals(ols):
+    '''This function plots model residual distribution '''
+    sns.set(style="darkgrid")
+    residuals = ols.resid
+    plt.figure(figsize=(8,5))
+    plt.title('Residuals Distribution')
+    sns.distplot(residuals)
+    plt.show();
+    
+    print('\n')
+    
+    plt.figure()
+    x_axis = np.linspace(0, 1, len(residuals))
+    plt.scatter(x_axis, residuals)
+    plt.title('Residuals and Baseline')
+    plt.show();
+    
+def qqplot(model, title):
+    ''' This function creates a qq plot  '''
+    fig, ax = plt.subplots(figsize=(8, 5))
+    fig = sm.graphics.qqplot(model.resid, line='45', fit=True, ax=ax)
+    plt.title(title)
+    plt.show();
+    
+ 
+
+
