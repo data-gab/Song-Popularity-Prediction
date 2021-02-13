@@ -241,8 +241,10 @@ def evaluate(model, X_test, y_test):
  
 def plot_shap(model, X_train):
     explainer = shap.Explainer(model, X_train)
-    shap_values = explainer(X_train)
+    shap_values = explainer.shap_values(X_train)
+    shap.summary_plot(shap_values, X_train)
+    shap.summary_plot(shap_values, X_train, plot_type='bar')
     
-    shap.plots.beeswarm(shap_values)
+    #shap.plots.beeswarm(shap_values)
 
-    shap.plots.bar(shap_values)
+    #shap.plots.bar(shap_values)
