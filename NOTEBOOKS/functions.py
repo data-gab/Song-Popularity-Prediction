@@ -248,3 +248,10 @@ def plot_shap(model, X_train):
     #shap.plots.beeswarm(shap_values)
 
     #shap.plots.bar(shap_values)
+    
+def plot_shap_tree(model, X_train, nsamples=100):
+    X = shap.utils.sample(X_train, nsamples=nsamples)
+    explainer = shap.TreeExplainer(model, X)
+    shap_values = explainer.shap_values(X)
+    shap.summary_plot(shap_values, X)
+    shap.summary_plot(shap_values, X, plot_type='bar')
