@@ -9,7 +9,7 @@ In the age of technology, it has become a lot easier for artists to upload their
 
 ## Overview of the Data
 ***
-Spotify is one of the most popular music streaming services around. They have an emmense collection of songs dating back to 1921. I obtained a dataset from the [kaggle website](https://www.kaggle.com/yamaerenay/spotify-dataset-19212020-160k-tracks) which contains over 175,000 songs between the years 1921-2020. This data was obtained from the Spotify API and I obtained further data using the API to get songs that were newly added in 2021. Spotify characterizes each of these songs with 13 audio features and also assigns each song a popularity score ranging from 0-100. 
+Spotify is one of the most popular music streaming services around. They have an immense collection of songs dating back to 1921. I obtained a dataset from the [kaggle website](https://www.kaggle.com/yamaerenay/spotify-dataset-19212020-160k-tracks) which contains over 175,000 songs between the years 1921-2020. This data was obtained from the Spotify API. Spotify characterizes each of these songs with 13 audio features and also assigns each song a popularity score ranging from 0-100. 
 
 The dataset contained:
 * 170,000+ tracks
@@ -72,12 +72,12 @@ The "data.csv" file contains more than 170.000 songs collected from Spotify Web 
 ### Popularity Distribution
 I first took a look at the distribution of the popularity scores. I noticed that a majority of the songs in this dataset are not that popular. Since I used this column to create a binary column for classification, I determined a good threshold would be a value of 35.
 
-<img src= 'IMAGES/pop_dist.png' width=700>
+<img src= 'IMAGES/dist.png' width=700>
 
 ### Top 10 most popular tracks
 With such an interesting dataset at my disposal, I wanted to see what were the top 10 most popular tracks on Spotify
 
-<img src = 'IMAGES/top10_tracks.png'>
+<img src = 'IMAGES/top10.png'>
 
 ### Top 20 most popular artists
 I also wanted to know which artists were the most popular
@@ -86,7 +86,7 @@ I also wanted to know which artists were the most popular
 ### Time series analysis of audio features over time
 I was interested to see how these audio features changed over time so I performed a time series analysis
 
-<img src='IMAGES/ts_audio.png'>
+<img src='IMAGES/ts.png'>
 
 
 ### Time series analysis of popularity over time
@@ -103,7 +103,7 @@ I wanted to look at the distribution of each individual audio feature. Judging b
 ### Heatmap
 Lastly, I wanted to take a look at the correlation between all the audio features to see if there was any possible multicollinearity. Year and popularity were very highly correlated.
 
-<img src='IMAGES/heatmap.png'>
+<img src='IMAGES/hm.png'>
 
 ## Classification Models
 ***
@@ -115,14 +115,14 @@ I decided to build various classification models to compare their accuracies. Th
 Overall, all the Logistic Regression models had performed the same. The one that performed the best was the LogisticRegressionCV model.
 **The LogisticRegressionCV model had a performance accuracy of 75.7%**, which is not much larger than the other models. Below is the confusion matrix produced from that model.
 
-<img src= 'IMAGES/logreg_cfm.png' >
+<img src= 'IMAGES/cfm.png' >
 
 This model had issues predicting song popularity. While the amount is low, there are false negatives and false positives, meaning that the model struggles to predict values correctly. I calculated the misclassification rate to be 0.245. **The AUC value calculated from the ROC Curve for this model was 0.82***. An AUC near 1 means that the model is better at predicting 0s as 0s and 1s as 1s.
 
 
 I wanted to get more information about the audio features within the dataset and how they affect my models. Using the Shap Python package, I created plots that would help me better understand my models. Shap uses Shapley values to help explain machine learning models. More information on the Shap package can be found at the [Shap documentation website](https://shap.readthedocs.io/en/latest/index.html). Below is a simplified summary plot created for this model. More information about this can be found [here](https://towardsdatascience.com/explain-your-model-with-the-shap-values-bc36aac4de3d).
 
-<img src="IMAGES/logreg_bar.png">
+<img src="IMAGES/sumplot.png">
 
 ***The summary plot above has ranked acousticness, valence, danceability, loudness, and speechiness to be the five most important features.*** For this plot, feature importances are displayed by ranking the variables in descending order. ***The top features contribute more to the model than the lower features, meaning they have higher predictive power***
 
@@ -144,7 +144,7 @@ The summary plot summarizes the following:
 
 Below are the calculated coefficients for the LogisticRegressionCV model.
 
-<img src='IMAGES/logreg_coeff.png'>
+<img src='IMAGES/coeff.png'>
 
 These coefficients confirm the interpretations the plots above. Positive coefficients make the event more likely and negative coefficients make the event less likely. An estimated coefficient near 0 implies that the effect of the predictor is small. The positive scores indicate a feature that predicts class 1(popular), whereas the negative scores indicate a feature that predicts class 0 (not popular).
 
@@ -154,82 +154,37 @@ However as we get to tempo, duration_ms, and key, we can see that their values a
 
 We see that acoustiness has a high negative value, and a deep blue color, meaning that it is very impactful to the model, and it is most likely to predict a song to not be popular. This is the similar case for valence and speechiness.
 
-***
-### Best Decison Trees Model
-The Decision Tree model that performed the best was the baseline model. This model had all default parameters for DecisionTrees with a max_depth of 10.
-**The baseline Decision Tree model had a performance accuracy of 76.11%**. Below is the confusion matrix produced from that model.
-
-<img src='IMAGES/dt_cfm.png'>
-
-This model had issues predicting song popularity. While the amount is low, there are false negatives and false positives, meaning that the model struggles to predict values correctly. I calculated the misclassification rate to be 0.24. **The AUC value calculated from the ROC Curve for this model was 0.76**. An AUC near 1 means that the model is better at predicting 0s as 0s and 1s as 1s.
-
-Below is the simplified summary plot for this model.
-<img src = 'IMAGES/dt_bar.png'>
-
-The shap_values for the two classes are additive inverses for this binary classification model. **The summary plot above has ranked acousticness, loudness, duration_ms, danceability, and valence to be the five most important features, meaning they have higher predictive power.** Reminder: feature importances are displayed by ranking the variables in descending order. As we go down the list of audio_features, the less predictive power those features have.
-
-Below is the more elaborate summary plot.
-
-<img src='IMAGES/dt_sumplot.png'>
-
-The summary plot summarizes the following:
-* When the level of acousticness of a track is low, it has a positive shap value and is more likely to be "popular"
-* When the level of loudness of a track is high, it has a positive shap value and is more likely to be "popular"
-* When the level of duration_ms of a track is low, it has a negative shap value and is less likely to be "popular"
-* When the level of danceability of a track is high, it has a positive shap value and is more likely to be "popular"
-* When the level of valence of a track is low, it has a positive shap value and is more likely to be "popular"
-
-***
-### Best Random Forests Model
-The Random Forests model that performed the best was the baseline model. This model had all default parameters for RandomForests with a max_depth of 10. **The baseline Random Forests model had a performance accuracy of 77.68%.** 
-
-Below is the confusion matrix produced from that model.
-
-<img src='IMAGES/rf_cfm.png'>
-
-This model had issues predicting song popularity. While the amount is low, there are false negatives and false positives, meaning that the model struggles to predict values correctly. I calculated the misclassification rate to be 0.22. **The AUC value calculated from the ROC Curve for this model was 0.78**. An AUC near 1 means that the model is better at predicting 0s as 0s and 1s as 1s.
-
-Below is the simplified summary plot for this model.
-
-<img src = 'IMAGES/rf_bar.png'>
-
-The shap_values for the two classes are additive inverses for this binary classification model. **The summary plot above has ranked acousticness, loudness, duration_ms, valence, and danceability to be the five most important features, meaning they have higher predictive power.** Reminder: feature importances are displayed by ranking the variables in descending order. As we go down the list of audio_features, the less predictive power those features have.
-
-Below is the more elaborate summary plot.
-
-
-<img src='IMAGES/rf_sumplot.png'>
-
-The summary plot summarizes the following:
-* When the level of acousticness of a track is low, it has a positive shap value and is more likely to be "popular"
-* When the level of loudness of a track is high, it has a positive shap value and is more likely to be "popular"
-* When the level of duration_ms of a track is low, it has a negative shap value and is less likely to be "popular"
-* When the level of valence of a track is low, it has a positive shap value and is more likely to be "popular"
-* When the level of danceability of a track is high, it has a positive shap value and is more likely to be "popular"
-
 *** 
 ### Conclusions
-The Baseline Random Forests model performed the best of all models at an accuracy of 77.68%.
+The LogisitcRegressionCV model performed the best of all models at an accuracy of 75.7% and a misclassification rate = 0.245.
 
-For the Logistic Regression models, acousticness, valence, danceability, loudness, and speechiness were ranked to be the five most important features.
+For this model, acousticness, valence, danceability, loudness, and speechiness were ranked to be the five most important features. These features are the most impactful to the model performance.
 
-As for the Decision Trees and Random Forests models, acousticness, loudness, duration_ms, valence, and danceability were ranked to be the five most important features.
+Most Impactful Audio Features on Model
+1. Acousticness
+2. Valence
+3. Danceability
+4. Loudness
+5. Speechiness
 
-All best models agree on the following: 
-* When the level of acousticness of a track is low, it has a positive shap value and is more likely to be "popular"
-* When the level of loudness of a track is high, it has a positive shap value and is more likely to be "popular"
-* When the level of valence of a track is low, it has a positive shap value and is more likely to be "popular"
-* When the level of danceability of a track is high, it has a positive shap value and is more likely to be "popular"
-*  When the level of speechiness of a track is high, it has a negative shap value and is less likely to be "popular
-* key and tempo are the least important features
 
-For an artist that wants to create popular music I would recommend to create sogns with low acoustics, a high loudness level, low valence, and high danceability.
+Summary of Top Audio Features:
+* When the level of acousticness of a track is low, it is more likely to be popular
+* When the level of valence of a track is low, it is more likely to be popular
+* When the level of danceability of a track is high, it is more likely to be popular
+* When the level of loudness of a track is high, it is more likely to be popular
+* When the level of speechiness of a track is high, it is less likely to be "popular"
+
 
 ### Problems I ran into
 I ran into many issues while trying to model. One of the main problems I had was that my models were taking a long time to fit the Decision Trees and Random Forests models, especially with GridSearchCV. One thing I had to do to lower the processing time was to make shallower trees by establishing a max_depth of 10. This made it hard to improve my models significantly. This could definitely have impacted the accuracy of my results.
 
 
-### Recommendations to improve models / Future Work
+### Recommendations 
+For an artist that wants to create popular music I would recommend to create songs with little to no acoustics, more electronic beats. Data shows that songs with a high acoustic levels are not popular so there should be a focus on creating electronic beats. Songs that are sad / gloomy tend to be more popular with listeners so try creating songs about heartbreak or betrayal (more despressing topics). Listeners enjoy music that they can dance to, so create songs that have a fast tempo, strong beats, and a stable rhythm. Popular songs have lyrics, but not too many, an artist should create songs with simple, repetitive lyrics.
+
+
+### Future Work
 While modeling I realized that that recently added songs would not have high popularity scores since popularity is based on the amount of listens a song gets. I believe looking at the date and time when a song was uploaded to Spotify would improve the models.
 
 I used a popularity threshold of 35, I would like to use the same modeling techniques on a different threshold value to see if that improves models predictions
