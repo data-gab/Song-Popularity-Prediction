@@ -31,8 +31,6 @@ from sklearn.metrics import (classification_report, confusion_matrix,
 
 from scipy.special import logit
 
-from functions import *
-
 plt.style.use('seaborn')
 
 import shap
@@ -94,13 +92,18 @@ def find_coeffs(model, X_train, X):
         in a dataframe for easy interpretation'''
     
     coeffs = pd.Series(model.coef_[0], index=X_train.columns)
-    return pd.DataFrame(coeffs, 
+   
+    df = pd.DataFrame(coeffs, 
              X.columns, 
-             columns=['coef'])\
-            .sort_values(by='coef', ascending=False)
+             columns=['coef'])
+    
+    df["abs_value"] = df.coef.abs()
+    df = df.sort_values(by='abs_value', ascending=False)
+    return df.drop('abs_value', axis=1)
 
 def roc_auc(model, X_train, X_test, y_train, y_test):
-    ''' This function will plot the ROC curve and display AUC for the model '''
+    ''' This function will plot the ROC curve and display AUC for the model
+        for LogisticRegression models'''
     
     # Calculate the probability scores of each point in the training and test set
     y_train_score = model.decision_function(X_train)
@@ -167,13 +170,12 @@ def roc_auc(model, X_train, X_test, y_train, y_test):
     print('Train AUC: {}'.format(auc(train_fpr, train_tpr)))
     print('Test AUC: {}'.format(auc(test_fpr, test_tpr)))
     
-    
-    
-    
     sns.set_style('darkgrid', {'axes.facecolor': '0.9'})
 
     
-def roc_dt_rf(y_test, pred, label):    
+def roc_dt_rf(y_test, pred, label):   
+    ''' This function will plot the ROC curve and display AUC for the model
+        for DecisionTrees and RandomForests models'''
     fpr, tpr, thresholds = roc_curve(y_test, pred)
     roc_auc = auc(fpr, tpr)
 
@@ -195,38 +197,6 @@ def roc_dt_rf(y_test, pred, label):
     
     print('AUC: {}'.format(auc(fpr, tpr)))
     
-def build_sm_ols(df, features, target, add_constant=False):
-    ''' This function builds OLS model and prints out summary '''
-    X = pd.DataFrame(df[features])
-    if add_constant:
-        X = sm.add_constant(X)
-    y =  df[target]
-    ols = sm.OLS(y, X).fit()
-    return ols
-
-def plot_residuals(ols):
-    '''This function plots model residual distribution '''
-    sns.set(style="darkgrid")
-    residuals = ols.resid
-    plt.figure(figsize=(8,5))
-    plt.title('Residuals Distribution')
-    sns.distplot(residuals)
-    plt.show();
-    
-    print('\n')
-    
-    plt.figure()
-    x_axis = np.linspace(0, 1, len(residuals))
-    plt.scatter(x_axis, residuals)
-    plt.title('Residuals and Baseline')
-    plt.show();
-    
-def qqplot(model, title):
-    ''' This function creates a qq plot  '''
-    fig, ax = plt.subplots(figsize=(8, 5))
-    fig = sm.graphics.qqplot(model.resid, line='45', fit=True, ax=ax)
-    plt.title(title)
-    plt.show();
     
 def evaluate(model, X_test, y_test):
     predictions = model.predict(X_test)
@@ -240,6 +210,8 @@ def evaluate(model, X_test, y_test):
     return accuracy
  
 def plot_shap(model, X_train):
+    ''' This function creates a summary plot using shap values
+        for logistic regression models'''
     explainer = shap.Explainer(model, X_train)
     shap_values = explainer.shap_values(X_train)
     shap.summary_plot(shap_values, X_train)
@@ -247,6 +219,8 @@ def plot_shap(model, X_train):
     
     
 def plot_shap_tree(model, X_train, X, nsamples=100):
+    ''' This function creates a summary plot using shap values
+        for DecisionTrees and RandomForests models '''
     X = shap.utils.sample(X_train, nsamples=nsamples)
     explainer = shap.TreeExplainer(model, X)
     shap_values = explainer.shap_values(X)
