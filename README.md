@@ -1,20 +1,21 @@
-# Predicting Song Popularity
+# Using Classification Models to Predict Song Popularity
 ***
 
 <img src= 'IMAGES/header.jpg' width=10000 />
 
 ## Introduction
 ***
-In the age of technology, it has become a lot easier for artists to upload their music to streaming platforms and gain popularity. It seems that almost everyday, artists come out with new songs, but generating a lot of music does not necessarily mean your tracks will be popular. I wanted to understand what constitutes a popular song.  The popular music streaming service, Spotify, has an API that allows access to several of their databases. One of the datasets examines audio features of thousands of tracks dating back to the 1920s. Reviewing aspects of these audio features that make a song popular can help artists create pieces that their audience will enjoy. This analysis's objective was to build classifying models that could predict a song's popularity given various audio features obtained from the Spotify API in hopes of helping artists gain popularity. 
+In the age of technology, it has become a lot easier for artists to upload their music to streaming platforms and gain popularity. It seems that almost everyday, artists come out with new songs, but generating a lot of music does not necessarily mean your tracks will be popular. I wanted to understand what constitutes a popular song. The popular music streaming service, Spotify, has an API that allows access to several of their databases. One of the datasets examines audio features of thousands of tracks dating back to the 1920s. Reviewing aspects of these audio features that make a song popular can help artists create pieces that their audience will enjoy. This analysis's objective was to build classifying models that could predict a song’s popularity given various audio features obtained from the Spotify API in hopes of helping artists gain popularity.
 
 ## Overview of the Data
 ***
-Spotify is one of the most popular music streaming services around. They have an immense collection of songs dating back to 1921. I obtained a dataset from the [kaggle website](https://www.kaggle.com/yamaerenay/spotify-dataset-19212020-160k-tracks) which contains over 175,000 songs between the years 1921-2020. This data was obtained from the Spotify API. Spotify characterizes each of these songs with 13 audio features and also assigns each song a popularity score ranging from 0-100. 
+
+Spotify is one of the most popular music streaming services around. They have an immense collection of songs and podcasts. I obtained a dataset from the [Kaggle website](https://www.kaggle.com/yamaerenay/spotify-dataset-19212020-160k-tracks), which contains songs released between 1921 and 2020. This data was obtained from the Spotify API. Spotify characterizes each of these songs with 13 audio features and also assigns each song a popularity score ranging from 0–100.
 
 The dataset contained:
 * 170,000+ tracks
 * About 30,000+ artists
-* 17 track audio_features
+* Track audio features
 
 ### Audio Features and their descriptions obtained from [Spotify API website](https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-audio-features)
 
@@ -75,7 +76,7 @@ I first took a look at the distribution of the popularity scores. I noticed that
 <img src= 'IMAGES/dist.png' width=700>
 
 ### Top 10 most popular tracks
-With such an interesting dataset at my disposal, I wanted to see what were the top 10 most popular tracks on Spotify
+With such an exciting dataset at my disposal, I wanted to see the top 10 most popular tracks on Spotify.
 
 <img src = 'IMAGES/top10.png'>
 
@@ -90,7 +91,7 @@ I was interested to see how these audio features changed over time so I performe
 
 
 ### Time series analysis of popularity over time
-I also wanted to see how popularity looked over time. Most songs from 1920s - early 1950s did not receive high popularity ratings. When you think about it that makes sense. Many people using spotify are not really gonna be listening to music from the 1920s - late 1940s. 
+I also wanted to see how popularity looked over time. Most songs from the 1920s to the early 1950s did not receive high popularity ratings. When you think about it, that makes sense. Many people using Spotify are not going to be listening to music from the 1920s to the late 1940s. 
 
 <img src='IMAGES/pop_ts.png'>
 
@@ -101,8 +102,7 @@ I wanted to look at the distribution of each individual audio feature. Judging b
 <img src='IMAGES/af_dist.png'>
 
 ### Heatmap
-Lastly, I wanted to take a look at the correlation between all the audio features to see if there was any possible multicollinearity. Year and popularity were very highly correlated.
-
+Lastly, I wanted to look at the correlation between all the audio features to see any possible multicollinearity. Year and popularity were very positively correlated.
 <img src='IMAGES/hm.png'>
 
 ## Classification Models
@@ -146,13 +146,14 @@ Below are the calculated coefficients for the LogisticRegressionCV model.
 
 <img src='IMAGES/coeff.png'>
 
-These coefficients confirm the interpretations the plots above. Positive coefficients make the event more likely and negative coefficients make the event less likely. An estimated coefficient near 0 implies that the effect of the predictor is small. The positive scores indicate a feature that predicts class 1(popular), whereas the negative scores indicate a feature that predicts class 0 (not popular).
+These coefficients confirm the interpretations of the plots above. Positive coefficients make the event more likely, and negative coefficients make the event less likely. An estimated coefficient near 0 implies that the effect of the predictor is small. The positive scores indicate a feature that predicts class 1(popular), whereas the negative scores indicate a feature that predicts class 0 (not popular).
 
-The danceability of a song is more likely to be predicted to be popular since it has a high positive value and we can judge by the deep red color that it is highly impactful to the model. The same is true with loudness.
+A song's danceability is more likely to be predicted to be popular since it has a high positive value, and we can judge by the deep red color that it is highly impactful to the model. The same is valid with loudness.
 
-However as we get to tempo, duration_ms, and key, we can see that their values are closer to zero, meaning that their their impact on the model is low. We can see this from in the summary plots above where these audio features are ranked lowest for feature importances. 
+However, as we get to tempo, duration_ms, and key, we can see that their values are closer to zero, meaning that their impact on the model is low. We can see this in the summary plots above, where these audio features are ranked lowest for feature importances.
 
-We see that acoustiness has a high negative value, and a deep blue color, meaning that it is very impactful to the model, and it is most likely to predict a song to not be popular. This is the similar case for valence and speechiness.
+We see that acoustiness has a high negative value, and deep blue color, meaning that it is very impactful to the model, and it is most likely to predict a song not to be popular. This is a similar case for valence and speechiness.
+
 
 *** 
 ### Conclusions
@@ -185,8 +186,8 @@ For an artist that wants to create popular music I would recommend to create son
 
 
 ### Future Work
-While modeling I realized that that recently added songs would not have high popularity scores since popularity is based on the amount of listens a song gets. I believe looking at the date and time when a song was uploaded to Spotify would improve the models.
+While modeling, I realized that recently added songs would not have high popularity scores since popularity is based on the amount of listens a song gets. Looking at the date and time when a song was uploaded to Spotify would improve the models.
 
-I used a popularity threshold of 35, I would like to use the same modeling techniques on a different threshold value to see if that improves models predictions
+I used a popularity threshold of 35, and I would like to use the same modeling techniques on a different threshold value to see if that improves model predictions.
 
-Most songs from 1920s - early 1950s did not receive high popularity ratings. When you think about it, that makes sense. Many people using Spotify are not really listening to music from the 1920s - late 1940s. I would like to see if removing those songs would improve the model.
+Most songs from the 1920s to the early 1950s did not receive high popularity ratings. When you think about it, that makes sense. Many people using Spotify are not listening to music from the 1920s to the late 1940s. I would like to see if removing those songs would improve the model.
